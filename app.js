@@ -173,17 +173,6 @@ function RetroBoard() {
     }, []);
 
     useEffect(() => {
-        if (!userName) {
-            openModal('Welcome!', 'Enter your name to join', '', (val) => {
-                if (val) {
-                    setUserName(val);
-                    localStorage.setItem('retroboard-username', val);
-                }
-            });
-        }
-    }, [userName, openModal]);
-
-    useEffect(() => {
         if (!userName) return;
         const sortables = [];
         Object.keys(columnsRef.current).forEach(colId => {
