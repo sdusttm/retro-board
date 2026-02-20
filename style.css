@@ -123,6 +123,9 @@ header {
     font-weight: 500;
     font-size: 0.9rem;
     transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .action-btn.secondary {
