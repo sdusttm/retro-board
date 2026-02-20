@@ -49,12 +49,15 @@ function RetroBoard() {
         localStorage.setItem(`retroboard-name-${boardId}`, boardNameRef.current);
     }, [isHost, boardId]);
 
+    const newCardIds = useRef(new Set());
+
     const handleAction = useCallback((action, fromRemote = false) => {
         setState(prev => {
             const next = { ...prev };
             const { type, columnId, cardId } = action;
             switch (type) {
                 case 'CREATE':
+                    newCardIds.current.add(cardId);
                     next[columnId] = [{ id: cardId, text: '', votes: 0, author: action.author, timestamp: Date.now() }, ...next[columnId]];
                     break;
                 case 'UPDATE':
@@ -180,7 +183,7 @@ function RetroBoard() {
             if (el) {
                 const s = new Sortable(el, {
                     group: 'cards',
-                    animation: 150,
+                    animation: 250,
                     forceFallback: true,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
@@ -188,17 +191,18 @@ function RetroBoard() {
                     preventOnFilter: false,
                     onStart: () => document.body.classList.add('is-dragging'),
                     onEnd: (evt) => {
-                        document.body.classList.remove('is-dragging');
                         const sourceColumnId = evt.from.dataset.colid;
                         const destColumnId = evt.to.dataset.colid;
                         const sourceIndex = evt.oldIndex;
                         const destIndex = evt.newIndex;
                         const cardId = evt.item.dataset.id;
 
-                        if (sourceColumnId === destColumnId && sourceIndex === destIndex) return;
+                        if (sourceColumnId === destColumnId && sourceIndex === destIndex) {
+                            document.body.classList.remove('is-dragging');
+                            return;
+                        }
 
-                        // Sortable moved the item in DOM, let's let React handle it.
-                        // We need to undo Sortable's DOM move because React will re-render soon.
+                        // Undo Sortable's DOM move — React will re-render to the correct position
                         if (evt.from.children[evt.oldIndex]) {
                             evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
                         } else {
@@ -212,6 +216,11 @@ function RetroBoard() {
                             destColumnId,
                             sourceIndex,
                             destIndex
+                        });
+
+                        // Remove is-dragging after React has painted
+                        requestAnimationFrame(() => {
+                            document.body.classList.remove('is-dragging');
                         });
                     }
                 });
@@ -314,7 +323,8 @@ function RetroBoard() {
                                 e('div', {
                                     key: card.id,
                                     'data-id': card.id,
-                                    className: 'card',
+                                    className: newCardIds.current.has(card.id) ? 'card card-new' : 'card',
+                                    onAnimationEnd: () => newCardIds.current.delete(card.id),
                                 },
                                     e('button', { className: 'delete-btn', onClick: () => handleAction({ type: 'DELETE', columnId: colId, cardId: card.id }) },
                                         e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
