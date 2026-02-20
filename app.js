@@ -150,6 +150,8 @@ function RetroBoard() {
                     animation: 200,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
+                    filter: '.vote-btn, .delete-btn, .card-text',
+                    preventOnFilter: false,
                     onStart: () => document.body.classList.add('is-dragging'),
                     onEnd: (evt) => {
                         document.body.classList.remove('is-dragging');
@@ -272,8 +274,8 @@ function RetroBoard() {
                                         ),
                                         e('div', { className: 'card-actions-group' },
                                             e('button', { className: 'vote-btn', onClick: () => handleAction({ type: 'VOTE', columnId: colId, cardId: card.id }) },
-                                                e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 },
-                                                    e('path', { d: 'M7 10l5-5 5 5m-10 4l5 5 5-5' })
+                                                e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+                                                    e('path', { d: 'M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3' })
                                                 ),
                                                 e('span', null, card.votes)
                                             ),
