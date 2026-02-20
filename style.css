@@ -397,27 +397,6 @@ header {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
 }
 
-.card-drag-handle {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.2);
-    pointer-events: none;
-    z-index: 10;
-}
-
-.card-drag-handle:hover {
-    color: var(--accent-color);
-}
-
-.card:has(.card-drag-handle:active) {
-    cursor: grabbing;
-}
 
 .card:active {
     cursor: grabbing;
@@ -526,12 +505,29 @@ header {
 }
 
 .delete-btn {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.3);
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
     opacity: 0;
+    z-index: 20;
+}
+
+.delete-btn:hover {
+    background: rgba(255, 77, 77, 0.2);
+    border-color: rgba(255, 77, 77, 0.4);
+    color: #ff4d4d;
+    transform: rotate(90deg);
 }
 
 .card:hover .delete-btn {

@@ -256,10 +256,9 @@ function RetroBoard() {
                                     'data-id': card.id,
                                     className: 'card',
                                 },
-                                    e('div', { className: 'card-drag-handle' },
-                                        e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2.5 },
-                                            e('circle', { cx: 9, cy: 12, r: 1 }), e('circle', { cx: 9, cy: 5, r: 1 }), e('circle', { cx: 9, cy: 19, r: 1 }),
-                                            e('circle', { cx: 15, cy: 12, r: 1 }), e('circle', { cx: 15, cy: 5, r: 1 }), e('circle', { cx: 15, cy: 19, r: 1 })
+                                    e('button', { className: 'delete-btn', onClick: () => handleAction({ type: 'DELETE', columnId: colId, cardId: card.id }) },
+                                        e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+                                            e('path', { d: 'M18 6L6 18M6 6l12 12' })
                                         )
                                     ),
                                     e('div', {
@@ -279,11 +278,6 @@ function RetroBoard() {
                                                 ),
                                                 e('span', null, card.votes)
                                             ),
-                                            e('button', { className: 'delete-btn', onClick: () => handleAction({ type: 'DELETE', columnId: colId, cardId: card.id }) },
-                                                e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 },
-                                                    e('polyline', { points: '3 6 5 6 21 6' }), e('path', { d: 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' })
-                                                )
-                                            )
                                         )
                                     )
                                 )
