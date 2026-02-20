@@ -66,6 +66,7 @@ header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    user-select: none;
 }
 
 .board-name-group {
@@ -147,6 +148,7 @@ header {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    user-select: none;
 }
 
 .user-badge {
@@ -318,6 +320,7 @@ header {
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-primary);
+    user-select: none;
 }
 
 .add-btn {
@@ -367,10 +370,57 @@ header {
     border-radius: 16px;
     padding: 1.25rem;
     margin-bottom: 1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.3s ease, border-color 0.2s ease, box-shadow 0.3s ease;
     position: relative;
-    cursor: default;
-    animation: fadeIn 0.5s ease;
+    cursor: grab;
+    animation: fadeIn 0.4s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.card:active {
+    cursor: grabbing;
+}
+
+.sortable-ghost {
+    opacity: 0.4;
+    border: 1px dashed var(--accent-color) !important;
+    animation: none !important;
+    transition: none !important;
+}
+
+.sortable-drag {
+    opacity: 0.9;
+    scale: 1.02;
+    z-index: 9999;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+.card-drag-handle {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.card-drag-handle:hover {
+    color: var(--accent-color);
+}
+
+.card:has(.card-drag-handle:active) {
+    cursor: grabbing;
+}
+
+.card:active {
+    cursor: grabbing;
 }
 
 @keyframes fadeIn {
@@ -392,17 +442,17 @@ header {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.card.dragging {
-    opacity: 0.4;
-    transform: scale(0.95);
-    box-shadow: none;
+
+
+.board-columns {
+    display: flex;
+    gap: 1.5rem;
+    height: 100%;
 }
 
+
 .card-list.drag-over {
-    background: rgba(255, 255, 255, 0.04);
-    border: 2px dashed rgba(255, 255, 255, 0.2);
     border-radius: 16px;
-    transition: all 0.2s ease;
 }
 
 .card-text {

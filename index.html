@@ -2,108 +2,26 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroBoard | Premium Retro Experience</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetroBoard | Premium React Experience</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "sortablejs": "https://esm.sh/sortablejs@1.15.0"
+      }
+    }
+    </script>
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 
 <body>
-    <header>
-        <div class="logo">RETRO<span>BOARD</span></div>
-        <div class="board-info" id="board-id-display">
-            <span id="status-dot" class="status-dot"></span>
-            <div class="board-name-group">
-                <span id="board-name-text" class="board-name" onclick="app.promptRenameboard()"
-                    title="Click to rename">Untitled Board</span>
-                <span id="board-id-text" class="board-id-sub">#loading...</span>
-            </div>
-        </div>
-        <div class="header-actions">
-            <button class="action-btn secondary" onclick="app.toggleBoardsPanel()" id="boards-btn">My Boards</button>
-            <button class="action-btn secondary" onclick="app.createNewBoard()">New Board</button>
-            <button class="action-btn" onclick="app.copyBoardLink()" id="share-btn">Share Board</button>
-            <div class="user-badge" id="user-badge" onclick="app.promptChangeUserName()"
-                title="Click to change your name">
-                <span class="user-avatar" id="user-avatar">?</span>
-                <span class="user-name-display" id="user-name-display">Guest</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- Online Users Panel -->
-    <div class="users-panel" id="users-panel">
-        <div class="users-panel-header">
-            <span class="users-panel-dot"></span>
-            <span id="users-count">1 online</span>
-        </div>
-        <div class="users-list" id="users-list">
-            <!-- Populated by JS -->
-        </div>
-    </div>
-
-    <main class="board-container">
-        <!-- Went Well -->
-        <section class="column" id="went-well">
-            <div class="column-header">
-                <h2 class="column-title">Went Well</h2>
-                <button class="add-btn" onclick="app.createCard('went-well')">+</button>
-            </div>
-            <div class="card-list" id="list-went-well">
-                <!-- Cards will be injected here -->
-            </div>
-        </section>
-
-        <!-- To Improve -->
-        <section class="column" id="to-improve">
-            <div class="column-header">
-                <h2 class="column-title">To Improve</h2>
-                <button class="add-btn" onclick="app.createCard('to-improve')">+</button>
-            </div>
-            <div class="card-list" id="list-to-improve">
-                <!-- Cards will be injected here -->
-            </div>
-        </section>
-
-        <!-- Action Items -->
-        <section class="column" id="action-items">
-            <div class="column-header">
-                <h2 class="column-title">Action Items</h2>
-                <button class="add-btn" onclick="app.createCard('action-items')">+</button>
-            </div>
-            <div class="card-list" id="list-action-items">
-                <!-- Cards will be injected here -->
-            </div>
-        </section>
-    </main>
-
-    <!-- Boards Panel -->
-    <div class="boards-panel-overlay" id="boards-panel-overlay" onclick="app.closeBoardsPanel()"></div>
-    <aside class="boards-panel" id="boards-panel">
-        <div class="boards-panel-header">
-            <h3>My Boards</h3>
-            <button class="add-btn" onclick="app.closeBoardsPanel()">&times;</button>
-        </div>
-        <div class="boards-list" id="boards-list">
-            <!-- Board items rendered by JS -->
-        </div>
-    </aside>
-
-    <!-- Custom Modal -->
-    <div class="modal-overlay" id="modal-overlay">
-        <div class="modal">
-            <h3 class="modal-title" id="modal-title">Board Name</h3>
-            <input type="text" class="modal-input" id="modal-input" placeholder="Enter board name..."
-                autocomplete="off" />
-            <div class="modal-actions">
-                <button class="action-btn secondary" id="modal-cancel">Cancel</button>
-                <button class="action-btn" id="modal-confirm">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+  <div id="root"></div>
+  <script type="module" src="app.js"></script>
 </body>
 
 </html>
