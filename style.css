@@ -348,6 +348,7 @@ header {
     overflow-y: auto;
     padding-top: 4px;
     padding-right: 0.5rem;
+    min-height: 200px;
 }
 
 /* Custom Scrollbar */

@@ -165,14 +165,10 @@ function RetroBoard() {
 
                         // Sortable moved the item in DOM, let's let React handle it.
                         // We need to undo Sortable's DOM move because React will re-render soon.
-                        if (evt.from !== evt.to) {
-                            evt.from.insertBefore(evt.item, evt.from.children[sourceIndex]);
+                        if (evt.from.children[evt.oldIndex]) {
+                            evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
                         } else {
-                            if (sourceIndex < destIndex) {
-                                evt.from.insertBefore(evt.item, evt.from.children[sourceIndex]);
-                            } else {
-                                evt.from.insertBefore(evt.item, evt.from.children[sourceIndex]);
-                            }
+                            evt.from.appendChild(evt.item);
                         }
 
                         handleAction({
