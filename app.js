@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import ReactDOM from 'react-dom/client';
+import { flushSync } from 'react-dom';
 import Sortable from 'sortablejs';
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -208,13 +209,17 @@ function RetroBoard() {
                             evt.from.appendChild(evt.item);
                         }
 
-                        handleAction({
-                            type: 'MOVE',
-                            cardId,
-                            sourceColumnId,
-                            destColumnId,
-                            sourceIndex,
-                            destIndex
+                        // flushSync forces React to commit synchronously before the browser
+                        // can paint, so the card never visibly snaps back to its old position
+                        flushSync(() => {
+                            handleAction({
+                                type: 'MOVE',
+                                cardId,
+                                sourceColumnId,
+                                destColumnId,
+                                sourceIndex,
+                                destIndex
+                            });
                         });
 
                         // Remove is-dragging after React has painted
