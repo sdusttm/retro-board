@@ -16,10 +16,10 @@ function RetroBoard() {
         'action-items': []
     });
     const [onlineUsers, setOnlineUsers] = useState([]);
-    const [status, setStatus] = useState('Connecting...');
     const [toast, setToast] = useState({ visible: false, message: '' });
     const [isBoardsOpen, setIsBoardsOpen] = useState(false);
     const [boards, setBoards] = useState([]);
+    const [modal, setModal] = useState({ visible: false, title: '', placeholder: '', defaultValue: '', onConfirm: null });
 
     const stateRef = useRef(state);
     const boardNameRef = useRef(boardName);
@@ -167,6 +167,21 @@ function RetroBoard() {
         setBoards(found);
     }, []);
 
+    const openModal = useCallback((title, placeholder, defaultValue, onConfirm) => {
+        setModal({ visible: true, title, placeholder, defaultValue, onConfirm });
+    }, []);
+
+    useEffect(() => {
+        if (!userName) {
+            openModal('Welcome!', 'Enter your name to join', '', (val) => {
+                if (val) {
+                    setUserName(val);
+                    localStorage.setItem('retroboard-username', val);
+                }
+            });
+        }
+    }, [userName, openModal]);
+
     useEffect(() => {
         if (!userName) return;
         const sortables = [];
@@ -237,7 +252,16 @@ function RetroBoard() {
             e('div', { className: 'board-info' },
                 e('span', { className: `status-dot ${isHost || status.includes('Connected') ? 'connected' : ''}`, title: status }),
                 e('div', { className: 'board-name-group' },
-                    e('span', { className: 'board-name', onClick: () => { const n = prompt('Rename', boardName); if (n) { setBoardName(n); setTimeout(broadcastState, 0); } } }, boardName),
+                    e('span', {
+                        className: 'board-name', onClick: () => {
+                            openModal('Rename Board', 'Enter new name...', boardName, (n) => {
+                                if (n) {
+                                    setBoardName(n);
+                                    setTimeout(broadcastState, 0);
+                                }
+                            });
+                        }
+                    }, boardName),
                     e('span', { className: 'board-id-sub' }, `#${boardId}`)
                 )
             ),
@@ -251,7 +275,19 @@ function RetroBoard() {
                     ),
                     'Boards'
                 ),
-                e('button', { className: 'action-btn secondary', onClick: () => { const id = generateId(); window.location.hash = id; window.location.reload(); } }, 'New Board'),
+                e('button', {
+                    className: 'action-btn secondary',
+                    onClick: () => {
+                        openModal('New Board', 'Enter board name...', 'Untitled Board', (name) => {
+                            if (name) {
+                                const id = generateId();
+                                localStorage.setItem(`retroboard-name-${id}`, name);
+                                window.location.hash = id;
+                                window.location.reload();
+                            }
+                        });
+                    }
+                }, 'New Board'),
                 e('button', { className: 'action-btn', onClick: () => { navigator.clipboard.writeText(window.location.href); setToast({ visible: true, message: 'Link copied to clipboard!' }); } }, 'Share Board'),
                 e('div', { className: 'user-badge' },
                     e('span', { className: 'user-avatar' }, userName[0]?.toUpperCase()),
@@ -347,6 +383,33 @@ function RetroBoard() {
                                 ),
                                 e('span', { className: 'board-item-cards' }, `${b.cardCount} card${b.cardCount !== 1 ? 's' : ''}`)
                             ))
+                    )
+                )
+            ),
+
+            modal.visible && e('div', { className: 'modal-overlay active', onClick: (ev) => { if (ev.target.className.includes('modal-overlay')) setModal({ ...modal, visible: false }); } },
+                e('div', { className: 'modal' },
+                    e('h3', { className: 'modal-title' }, modal.title),
+                    e('input', {
+                        id: 'modal-input', className: 'modal-input', placeholder: modal.placeholder, defaultValue: modal.defaultValue, autoFocus: true,
+                        onKeyDown: ev => {
+                            if (ev.key === 'Enter') {
+                                modal.onConfirm(ev.target.value);
+                                setModal({ ...modal, visible: false });
+                            }
+                            if (ev.key === 'Escape') setModal({ ...modal, visible: false });
+                        }
+                    }),
+                    e('div', { className: 'modal-actions' },
+                        e('button', { className: 'action-btn secondary', onClick: () => setModal({ ...modal, visible: false }) }, 'Cancel'),
+                        e('button', {
+                            className: 'action-btn',
+                            onClick: () => {
+                                const v = document.getElementById('modal-input').value;
+                                modal.onConfirm(v);
+                                setModal({ ...modal, visible: false });
+                            }
+                        }, 'Confirm')
                     )
                 )
             )
