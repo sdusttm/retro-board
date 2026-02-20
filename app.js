@@ -17,6 +17,7 @@ function RetroBoard() {
     });
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [status, setStatus] = useState('Connecting...');
+    const [toast, setToast] = useState({ visible: false, message: '' });
 
     const stateRef = useRef(state);
     const boardNameRef = useRef(boardName);
@@ -140,6 +141,13 @@ function RetroBoard() {
     }, [boardId, userName]);
 
     useEffect(() => {
+        if (toast.visible) {
+            const timer = setTimeout(() => setToast({ visible: false, message: '' }), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [toast.visible]);
+
+    useEffect(() => {
         if (!userName) return;
         const sortables = [];
         Object.keys(columnsRef.current).forEach(colId => {
@@ -215,7 +223,7 @@ function RetroBoard() {
             ),
             e('div', { className: 'header-actions' },
                 e('button', { className: 'action-btn secondary', onClick: () => { const id = generateId(); window.location.hash = id; window.location.reload(); } }, 'New Board'),
-                e('button', { className: 'action-btn', onClick: () => { navigator.clipboard.writeText(window.location.href); alert('Copied!'); } }, 'Share Board'),
+                e('button', { className: 'action-btn', onClick: () => { navigator.clipboard.writeText(window.location.href); setToast({ visible: true, message: 'Link copied to clipboard!' }); } }, 'Share Board'),
                 e('div', { className: 'user-badge' },
                     e('span', { className: 'user-avatar' }, userName[0]?.toUpperCase()),
                     e('span', { className: 'user-name-display' }, userName)
@@ -281,6 +289,12 @@ function RetroBoard() {
                         )
                     )
                 ))
+            ),
+            toast.visible && e('div', { className: `toast ${toast.visible ? 'show' : ''}` },
+                e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2.5, style: { marginRight: '8px' } },
+                    e('path', { d: 'M20 6L9 17l-5-5' })
+                ),
+                toast.message
             )
         )
     );
