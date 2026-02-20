@@ -180,7 +180,8 @@ function RetroBoard() {
             if (el) {
                 const s = new Sortable(el, {
                     group: 'cards',
-                    animation: 200,
+                    animation: 150,
+                    forceFallback: true,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
                     filter: '.vote-btn, .delete-btn, .card-text',
