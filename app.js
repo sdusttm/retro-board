@@ -324,6 +324,7 @@ function RetroBoard() {
                                     e('div', {
                                         className: 'card-text', contentEditable: true, suppressContentEditableWarning: true,
                                         onBlur: ev => handleAction({ type: 'UPDATE', columnId: colId, cardId: card.id, text: ev.target.innerText }),
+                                        onKeyDown: ev => { if (ev.key === 'Enter') { ev.preventDefault(); ev.target.blur(); } },
                                         'data-placeholder': 'Type something...'
                                     }, card.text),
                                     e('div', { className: 'card-footer' },
