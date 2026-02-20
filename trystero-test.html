@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/trystero/dist/trystero-torrent.min.js"></script>
+<script>
+  console.log("trystero", window.trystero);
+  const {joinRoom} = trystero;
+  const room = joinRoom({appId: 'retroboard-test-123'}, 'test-room');
+  room.onPeerJoin(peerId => console.log('peer joined:', peerId));
+  console.log("Waiting for peers...");
+</script>
+</body>
+</html>
