@@ -7,13 +7,14 @@ const e = React.createElement;
 
 function RetroBoard() {
     const [boardId] = useState(() => window.location.hash.substring(1) || generateId());
-    const [boardName, setBoardName] = useState('Untitled Board');
+    const [boardName, setBoardName] = useState(() => localStorage.getItem(`retroboard-name-${window.location.hash.substring(1)}`) || 'Untitled Board');
     const [userName, setUserName] = useState(() => localStorage.getItem('retroboard-username') || '');
     const [isHost, setIsHost] = useState(false);
-    const [state, setState] = useState({
-        'went-well': [],
-        'to-improve': [],
-        'action-items': []
+    const [status, setStatus] = useState('');
+    const [state, setState] = useState(() => {
+        const saved = localStorage.getItem(`retroboard-state-${window.location.hash.substring(1)}`);
+        if (saved) try { return JSON.parse(saved); } catch (e) { }
+        return { 'went-well': [], 'to-improve': [], 'action-items': [] };
     });
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [toast, setToast] = useState({ visible: false, message: '' });
