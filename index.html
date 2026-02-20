@@ -21,10 +21,27 @@
             </div>
         </div>
         <div class="header-actions">
-            <button class="action-btn" onclick="app.copyBoardLink()" id="share-btn">Share Board</button>
+            <button class="action-btn secondary" onclick="app.toggleBoardsPanel()" id="boards-btn">My Boards</button>
             <button class="action-btn secondary" onclick="app.createNewBoard()">New Board</button>
+            <button class="action-btn" onclick="app.copyBoardLink()" id="share-btn">Share Board</button>
+            <div class="user-badge" id="user-badge" onclick="app.promptChangeUserName()"
+                title="Click to change your name">
+                <span class="user-avatar" id="user-avatar">?</span>
+                <span class="user-name-display" id="user-name-display">Guest</span>
+            </div>
         </div>
     </header>
+
+    <!-- Online Users Panel -->
+    <div class="users-panel" id="users-panel">
+        <div class="users-panel-header">
+            <span class="users-panel-dot"></span>
+            <span id="users-count">1 online</span>
+        </div>
+        <div class="users-list" id="users-list">
+            <!-- Populated by JS -->
+        </div>
+    </div>
 
     <main class="board-container">
         <!-- Went Well -->
@@ -60,6 +77,18 @@
             </div>
         </section>
     </main>
+
+    <!-- Boards Panel -->
+    <div class="boards-panel-overlay" id="boards-panel-overlay" onclick="app.closeBoardsPanel()"></div>
+    <aside class="boards-panel" id="boards-panel">
+        <div class="boards-panel-header">
+            <h3>My Boards</h3>
+            <button class="add-btn" onclick="app.closeBoardsPanel()">&times;</button>
+        </div>
+        <div class="boards-list" id="boards-list">
+            <!-- Board items rendered by JS -->
+        </div>
+    </aside>
 
     <!-- Custom Modal -->
     <div class="modal-overlay" id="modal-overlay">
