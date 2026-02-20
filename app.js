@@ -18,6 +18,8 @@ function RetroBoard() {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [status, setStatus] = useState('Connecting...');
     const [toast, setToast] = useState({ visible: false, message: '' });
+    const [isBoardsOpen, setIsBoardsOpen] = useState(false);
+    const [boards, setBoards] = useState([]);
 
     const stateRef = useRef(state);
     const boardNameRef = useRef(boardName);
@@ -147,6 +149,24 @@ function RetroBoard() {
         }
     }, [toast.visible]);
 
+    const refreshBoards = useCallback(() => {
+        const found = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('retroboard-state-')) {
+                const id = key.replace('retroboard-state-', '');
+                const name = localStorage.getItem(`retroboard-name-${id}`) || 'Untitled Board';
+                let cardCount = 0;
+                try {
+                    const savedState = JSON.parse(localStorage.getItem(key));
+                    cardCount = Object.values(savedState).reduce((sum, col) => sum + col.length, 0);
+                } catch (e) { }
+                found.push({ id, name, cardCount });
+            }
+        }
+        setBoards(found);
+    }, []);
+
     useEffect(() => {
         if (!userName) return;
         const sortables = [];
@@ -222,6 +242,15 @@ function RetroBoard() {
                 )
             ),
             e('div', { className: 'header-actions' },
+                e('button', {
+                    className: `action-btn secondary ${isBoardsOpen ? 'active' : ''}`,
+                    onClick: () => { refreshBoards(); setIsBoardsOpen(true); }
+                },
+                    e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, style: { marginRight: '6px' } },
+                        e('path', { d: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' })
+                    ),
+                    'Boards'
+                ),
                 e('button', { className: 'action-btn secondary', onClick: () => { const id = generateId(); window.location.hash = id; window.location.reload(); } }, 'New Board'),
                 e('button', { className: 'action-btn', onClick: () => { navigator.clipboard.writeText(window.location.href); setToast({ visible: true, message: 'Link copied to clipboard!' }); } }, 'Share Board'),
                 e('div', { className: 'user-badge' },
@@ -295,6 +324,31 @@ function RetroBoard() {
                     e('path', { d: 'M20 6L9 17l-5-5' })
                 ),
                 toast.message
+            ),
+
+            e(React.Fragment, null,
+                e('div', { className: `boards-panel-overlay ${isBoardsOpen ? 'active' : ''}`, onClick: () => setIsBoardsOpen(false) }),
+                e('div', { className: `boards-panel ${isBoardsOpen ? 'open' : ''}` },
+                    e('div', { className: 'boards-panel-header' },
+                        e('h3', null, 'Your Boards'),
+                        e('button', { className: 'close-btn', onClick: () => setIsBoardsOpen(false) }, '×')
+                    ),
+                    e('div', { className: 'boards-list' },
+                        boards.length === 0 ? e('div', { className: 'no-boards' }, 'No recent boards') :
+                            boards.map(b => e('div', {
+                                key: b.id,
+                                className: `board-item ${b.id === boardId ? 'active' : ''}`,
+                                onClick: () => { if (b.id !== boardId) { window.location.hash = b.id; window.location.reload(); } }
+                            },
+                                e('span', { className: 'board-item-dot' }),
+                                e('div', { className: 'board-item-info' },
+                                    e('div', { className: 'board-item-name' }, b.name),
+                                    e('div', { className: 'board-item-id' }, `#${b.id}`)
+                                ),
+                                e('span', { className: 'board-item-cards' }, `${b.cardCount} card${b.cardCount !== 1 ? 's' : ''}`)
+                            ))
+                    )
+                )
             )
         )
     );
