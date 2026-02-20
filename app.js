@@ -184,7 +184,6 @@ function RetroBoard() {
                 const s = new Sortable(el, {
                     group: 'cards',
                     animation: 250,
-                    forceFallback: true,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
                     filter: '.vote-btn, .delete-btn, .card-text',
