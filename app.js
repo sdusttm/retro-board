@@ -25,6 +25,7 @@ function RetroBoard() {
     const stateRef = useRef(state);
     const boardNameRef = useRef(boardName);
     const onlineUsersRef = useRef(onlineUsers);
+    const userNameRef = useRef(userName);
     const connectionsRef = useRef([]);
     const peerRef = useRef(null);
     const hostConnRef = useRef(null);
@@ -33,6 +34,8 @@ function RetroBoard() {
     useEffect(() => { stateRef.current = state; }, [state]);
     useEffect(() => { boardNameRef.current = boardName; }, [boardName]);
     useEffect(() => { onlineUsersRef.current = onlineUsers; }, [onlineUsers]);
+    const [peerReady, setPeerReady] = useState(() => !!userName);
+    useEffect(() => { userNameRef.current = userName; }, [userName]);
 
     const broadcastState = useCallback(() => {
         if (!isHost) return;
@@ -48,6 +51,19 @@ function RetroBoard() {
         localStorage.setItem(`retroboard-state-${boardId}`, JSON.stringify(stateRef.current));
         localStorage.setItem(`retroboard-name-${boardId}`, boardNameRef.current);
     }, [isHost, boardId]);
+
+    useEffect(() => {
+        if (!userName) return;
+        if (!peerReady) {
+            setPeerReady(true);
+            return;
+        }
+        // Rename: update online users list and broadcast
+        const next = onlineUsersRef.current.map(u => u.isHost ? { ...u, name: userName } : u);
+        setOnlineUsers(next);
+        onlineUsersRef.current = next;
+        setTimeout(broadcastState, 0);
+    }, [userName, broadcastState, peerReady]);
 
     const handleAction = useCallback((action, fromRemote = false) => {
         setState(prev => {
@@ -88,7 +104,7 @@ function RetroBoard() {
     }, [isHost, broadcastState]);
 
     useEffect(() => {
-        if (!userName) return;
+        if (!userNameRef.current) return;
         window.location.hash = boardId;
 
         const p = new Peer(`retroboard-${boardId}`, { debug: 1 });
@@ -101,7 +117,7 @@ function RetroBoard() {
                 if (saved) try { setState(JSON.parse(saved)); } catch (e) { }
                 const savedName = localStorage.getItem(`retroboard-name-${boardId}`);
                 if (savedName) setBoardName(savedName);
-                const initialUsers = [{ name: userName, isHost: true }];
+                const initialUsers = [{ name: userNameRef.current, isHost: true }];
                 setOnlineUsers(initialUsers);
                 onlineUsersRef.current = initialUsers;
             }
@@ -115,7 +131,7 @@ function RetroBoard() {
             conn.on('data', (data) => {
                 if (data.type === 'ANNOUNCE') {
                     conn._userName = data.userName;
-                    const next = [{ name: userName, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))];
+                    const next = [{ name: userNameRef.current, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))];
                     setOnlineUsers(next);
                     onlineUsersRef.current = next;
                     const payload = { type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: next };
@@ -126,7 +142,7 @@ function RetroBoard() {
             });
             conn.on('close', () => {
                 connectionsRef.current = connectionsRef.current.filter(c => c !== conn);
-                const next = [{ name: userName, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))];
+                const next = [{ name: userNameRef.current, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))];
                 setOnlineUsers(next);
                 onlineUsersRef.current = next;
                 const payload = { type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: next };
@@ -141,7 +157,7 @@ function RetroBoard() {
                 gp.on('open', () => {
                     setIsHost(false); setStatus('Guest (Connecting...)');
                     const c = gp.connect(`retroboard-${boardId}`, { reliable: true }); hostConnRef.current = c;
-                    c.on('open', () => { setStatus('Guest (Connected)'); c.send({ type: 'ANNOUNCE', userName }); });
+                    c.on('open', () => { setStatus('Guest (Connected)'); c.send({ type: 'ANNOUNCE', userName: userNameRef.current }); });
                     c.on('data', (d) => {
                         if (d.type === 'SYNC_STATE') { setState(d.state); setBoardName(d.boardName); setOnlineUsers(d.onlineUsers); }
                     });
@@ -150,7 +166,7 @@ function RetroBoard() {
         });
 
         return () => p.destroy();
-    }, [boardId, userName]);
+    }, [boardId, peerReady]);
 
     useEffect(() => {
         if (toast.visible) {
@@ -312,7 +328,7 @@ function RetroBoard() {
                 e('span', { className: 'users-panel-dot' }), e('span', null, `${onlineUsers.length} online`)
             ),
             e('div', { className: 'users-list' },
-                onlineUsers.map(u => e('div', { className: 'user-presence-item', key: u.name },
+                onlineUsers.map((u, i) => e('div', { className: 'user-presence-item', key: i },
                     e('span', { className: `user-presence-avatar ${u.isHost ? 'host-avatar' : ''}` }, u.name ? u.name[0].toUpperCase() : '?'),
                     e('span', { className: 'user-presence-name' }, `${u.name} ${u.isHost ? '(host)' : ''}`)
                 ))
