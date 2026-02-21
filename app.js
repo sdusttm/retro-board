@@ -2,10 +2,41 @@ import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import ReactDOM from 'react-dom/client';
 import Sortable from 'sortablejs';
 
-const generateId = () => Math.random().toString(36).substring(2, 9);
+export const generateId = () => Math.random().toString(36).substring(2, 9);
 const e = React.createElement;
 
-function RetroBoard() {
+export function applyAction(state, action) {
+    const next = { ...state };
+    const { type, columnId, cardId } = action;
+    switch (type) {
+        case 'CREATE':
+            next[columnId] = [...next[columnId], { id: cardId, text: '', votes: 0, author: action.author, timestamp: Date.now() }];
+            break;
+        case 'UPDATE':
+            next[columnId] = next[columnId].map(c => c.id === cardId ? { ...c, text: action.text } : c);
+            break;
+        case 'VOTE':
+            next[columnId] = next[columnId].map(c => c.id === cardId ? { ...c, votes: c.votes + 1 } : c);
+            break;
+        case 'DELETE':
+            next[columnId] = next[columnId].filter(c => c.id !== cardId);
+            break;
+        case 'MOVE': {
+            const sId = action.sourceColumnId;
+            const dId = action.destColumnId;
+            const sourceItems = [...next[sId]];
+            const destItems = sId === dId ? sourceItems : [...next[dId]];
+            const [moved] = sourceItems.splice(action.sourceIndex, 1);
+            destItems.splice(action.destIndex, 0, moved);
+            next[sId] = sourceItems;
+            next[dId] = destItems;
+            break;
+        }
+    }
+    return next;
+}
+
+export function RetroBoard() {
     const [boardId] = useState(() => window.location.hash.substring(1) || generateId());
     const [boardName, setBoardName] = useState('Untitled Board');
     const [userName, setUserName] = useState(() => localStorage.getItem('retroboard-username') || '');
@@ -66,35 +97,7 @@ function RetroBoard() {
     }, [userName, broadcastState, peerReady]);
 
     const handleAction = useCallback((action, fromRemote = false) => {
-        setState(prev => {
-            const next = { ...prev };
-            const { type, columnId, cardId } = action;
-            switch (type) {
-                case 'CREATE':
-                    next[columnId] = [...next[columnId], { id: cardId, text: '', votes: 0, author: action.author, timestamp: Date.now() }];
-                    break;
-                case 'UPDATE':
-                    next[columnId] = next[columnId].map(c => c.id === cardId ? { ...c, text: action.text } : c);
-                    break;
-                case 'VOTE':
-                    next[columnId] = next[columnId].map(c => c.id === cardId ? { ...c, votes: c.votes + 1 } : c);
-                    break;
-                case 'DELETE':
-                    next[columnId] = next[columnId].filter(c => c.id !== cardId);
-                    break;
-                case 'MOVE':
-                    const sId = action.sourceColumnId;
-                    const dId = action.destColumnId;
-                    const sourceItems = [...next[sId]];
-                    const destItems = sId === dId ? sourceItems : [...next[dId]];
-                    const [moved] = sourceItems.splice(action.sourceIndex, 1);
-                    destItems.splice(action.destIndex, 0, moved);
-                    next[sId] = sourceItems;
-                    next[dId] = destItems;
-                    break;
-            }
-            return next;
-        });
+        setState(prev => applyAction(prev, action));
 
         if (isHost) {
             setTimeout(broadcastState, 0);
