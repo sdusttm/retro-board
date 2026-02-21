@@ -55,7 +55,7 @@ function RetroBoard() {
             const { type, columnId, cardId } = action;
             switch (type) {
                 case 'CREATE':
-                    next[columnId] = [{ id: cardId, text: '', votes: 0, author: action.author, timestamp: Date.now() }, ...next[columnId]];
+                    next[columnId] = [...next[columnId], { id: cardId, text: '', votes: 0, author: action.author, timestamp: Date.now() }];
                     break;
                 case 'UPDATE':
                     next[columnId] = next[columnId].map(c => c.id === cardId ? { ...c, text: action.text } : c);
@@ -193,7 +193,7 @@ function RetroBoard() {
                     animation: 350,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
-                    filter: '.vote-btn, .delete-btn, .card-text',
+                    filter: '.vote-btn, .delete-btn, .card-text, .card-footer',
                     preventOnFilter: false,
                     onStart: () => document.body.classList.add('is-dragging'),
                     onEnd: (evt) => {
@@ -324,7 +324,18 @@ function RetroBoard() {
                     e('section', { className: 'column', key: colId },
                         e('div', { className: 'column-header' },
                             e('h2', { className: 'column-title' }, colId.replace('-', ' ').toUpperCase()),
-                            e('button', { className: 'add-btn', onClick: () => handleAction({ type: 'CREATE', columnId: colId, cardId: generateId(), author: userName }) }, '+')
+                            e('button', { className: 'add-btn', onClick: () => {
+                                const id = generateId();
+                                handleAction({ type: 'CREATE', columnId: colId, cardId: id, author: userName });
+                                setTimeout(() => {
+                                    const list = columnsRef.current[colId];
+                                    if (list) {
+                                        list.scrollTop = list.scrollHeight;
+                                        const newCard = list.querySelector(`[data-id="${id}"] .card-text`);
+                                        if (newCard) newCard.focus();
+                                    }
+                                }, 0);
+                            } }, '+')
                         ),
                         e('div', {
                             className: 'card-list',
@@ -336,6 +347,10 @@ function RetroBoard() {
                                     key: card.id,
                                     'data-id': card.id,
                                     className: 'card',
+                                    onDoubleClick: (ev) => {
+                                        const textEl = ev.currentTarget.querySelector('.card-text');
+                                        if (textEl) { textEl.focus(); }
+                                    }
                                 },
                                     e('button', { className: 'delete-btn', onClick: () => handleAction({ type: 'DELETE', columnId: colId, cardId: card.id }) },
                                         e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },

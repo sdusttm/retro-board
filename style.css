@@ -509,6 +509,11 @@ body.is-dragging .card {
     transition: color 0.3s ease;
 }
 
+.vote-btn svg,
+.vote-btn span {
+    pointer-events: none;
+}
+
 .vote-btn:hover {
     color: var(--accent-color);
 }
@@ -530,6 +535,10 @@ body.is-dragging .card {
     transition: all 0.2s ease;
     opacity: 0;
     z-index: 20;
+}
+
+.delete-btn svg {
+    pointer-events: none;
 }
 
 .delete-btn:hover {
