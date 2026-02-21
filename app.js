@@ -574,7 +574,22 @@ export function RetroBoard() {
                                     e('div', { className: 'board-item-name' }, b.name),
                                     e('div', { className: 'board-item-id' }, `#${b.id}`)
                                 ),
-                                e('span', { className: 'board-item-cards' }, `${b.cardCount} card${b.cardCount !== 1 ? 's' : ''}`)
+                                e('span', { className: 'board-item-cards' }, `${b.cardCount} card${b.cardCount !== 1 ? 's' : ''}`),
+                                b.id !== boardId && e('button', {
+                                    className: 'board-item-delete',
+                                    title: 'Remove board',
+                                    onClick: (ev) => {
+                                        ev.stopPropagation();
+                                        localStorage.removeItem(`retroboard-state-${b.id}`);
+                                        localStorage.removeItem(`retroboard-name-${b.id}`);
+                                        localStorage.removeItem(`retroboard-ts-${b.id}`);
+                                        refreshBoards();
+                                    }
+                                },
+                                    e('svg', { width: 12, height: 12, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+                                        e('path', { d: 'M18 6L6 18M6 6l12 12' })
+                                    )
+                                )
                             ))
                     )
                 )

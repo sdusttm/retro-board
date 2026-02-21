@@ -927,6 +927,32 @@ body.is-dragging .card {
     border-radius: 6px;
 }
 
+.board-item-delete {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.25);
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
+.board-item:hover .board-item-delete {
+    opacity: 1;
+}
+
+.board-item-delete:hover {
+    background: rgba(255, 77, 77, 0.2);
+    color: #ff4d4d;
+}
+
 .no-boards {
     padding: 3rem 1rem;
     text-align: center;
