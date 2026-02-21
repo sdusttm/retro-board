@@ -199,16 +199,19 @@ function RetroBoard() {
                     preventOnFilter: false,
                     onStart: () => document.body.classList.add('is-dragging'),
                     onEnd: (evt) => {
+                        // Remove is-dragging FIRST so SortableJS's post-onEnd settle
+                        // animation runs with transitions fully enabled (like prod).
+                        // Deferring it to rAF caused SortableJS cleanup to fire while
+                        // animation:none was still active → stiff, abrupt drop.
+                        document.body.classList.remove('is-dragging');
+
                         const sourceColumnId = evt.from.dataset.colid;
                         const destColumnId = evt.to.dataset.colid;
                         const sourceIndex = evt.oldIndex;
                         const destIndex = evt.newIndex;
                         const cardId = evt.item.dataset.id;
 
-                        if (sourceColumnId === destColumnId && sourceIndex === destIndex) {
-                            document.body.classList.remove('is-dragging');
-                            return;
-                        }
+                        if (sourceColumnId === destColumnId && sourceIndex === destIndex) return;
 
                         // Undo Sortable's DOM move — React will re-render to the correct position
                         if (evt.from.children[evt.oldIndex]) {
@@ -217,8 +220,8 @@ function RetroBoard() {
                             evt.from.appendChild(evt.item);
                         }
 
-                        // flushSync forces React to commit synchronously before the browser
-                        // can paint, so the card never visibly snaps back to its old position
+                        // flushSync commits React synchronously before the browser can paint,
+                        // so the card never visibly snaps back to its old position
                         flushSync(() => {
                             handleActionRef.current({
                                 type: 'MOVE',
@@ -228,11 +231,6 @@ function RetroBoard() {
                                 sourceIndex,
                                 destIndex
                             });
-                        });
-
-                        // Remove is-dragging after React has painted
-                        requestAnimationFrame(() => {
-                            document.body.classList.remove('is-dragging');
                         });
                     }
                 });
