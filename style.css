@@ -406,9 +406,16 @@ header {
 
 body.is-dragging .card {
     animation: none !important;
-    /* transition intentionally NOT suppressed here — SortableJS uses CSS
-       transitions for its animation:250 slide effect. Suppressing it caused
-       cards to snap/jitter instead of sliding smoothly to make room. */
+    transition: none !important;
+    /* transition:none is intentional here. SortableJS sets inline
+       `transition: transform 250ms` for each cursor-position change during hover.
+       Without !important, rapid dragging stacks multiple 250ms animations that
+       fight each other — cards stall and appear frozen instead of squeezing.
+       With !important, each position update is instant (like prod), so cards
+       always reflect the current cursor position cleanly.
+       This is safe because is-dragging is removed at the TOP of onEnd (before
+       SortableJS's settle cleanup), so the drop settle animation gets full
+       transitions anyway. */
 }
 
 @keyframes fadeIn {
