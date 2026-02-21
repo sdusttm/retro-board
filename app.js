@@ -52,6 +52,10 @@ function RetroBoard() {
 
     const newCardIds = useRef(new Set());
 
+    // Keep a stable ref to handleAction so SortableJS instances never need to be
+    // torn down and recreated when isHost / broadcastState references change.
+    const handleActionRef = useRef(null);
+
     const handleAction = useCallback((action, fromRemote = false) => {
         setState(prev => {
             const next = { ...prev };
@@ -90,6 +94,10 @@ function RetroBoard() {
             hostConnRef.current.send({ type: 'ACTION', action });
         }
     }, [isHost, broadcastState]);
+
+    // Keep the ref in sync so SortableJS always calls the latest handleAction
+    // without needing to be recreated when isHost/broadcastState change.
+    useEffect(() => { handleActionRef.current = handleAction; }, [handleAction]);
 
     useEffect(() => {
         if (!userName) return;
@@ -212,7 +220,7 @@ function RetroBoard() {
                         // flushSync forces React to commit synchronously before the browser
                         // can paint, so the card never visibly snaps back to its old position
                         flushSync(() => {
-                            handleAction({
+                            handleActionRef.current({
                                 type: 'MOVE',
                                 cardId,
                                 sourceColumnId,
@@ -232,7 +240,9 @@ function RetroBoard() {
             }
         });
         return () => sortables.forEach(s => s.destroy());
-    }, [userName, handleAction]);
+    // handleAction intentionally omitted: we use handleActionRef so instances
+    // are created once and never torn down when isHost/broadcastState change.
+    }, [userName]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!userName) {
         return e('div', { className: 'modal-overlay active' },
