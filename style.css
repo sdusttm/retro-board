@@ -457,6 +457,10 @@ body.is-dragging .card {
     -webkit-user-select: text;
 }
 
+.card-text:not(:focus) {
+    pointer-events: none;
+}
+
 .card-footer {
     display: flex;
     justify-content: space-between;

@@ -209,7 +209,7 @@ function RetroBoard() {
                     animation: 350,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
-                    filter: '.vote-btn, .delete-btn, .card-text, .card-footer',
+                    filter: '.vote-btn, .delete-btn, .card-text',
                     preventOnFilter: false,
                     onStart: () => document.body.classList.add('is-dragging'),
                     onEnd: (evt) => {
