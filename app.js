@@ -20,6 +20,7 @@ function RetroBoard() {
     const [isBoardsOpen, setIsBoardsOpen] = useState(false);
     const [boards, setBoards] = useState([]);
     const [modal, setModal] = useState({ visible: false, title: '', placeholder: '', defaultValue: '', onConfirm: null });
+    const [status, setStatus] = useState('');
 
     const stateRef = useRef(state);
     const boardNameRef = useRef(boardName);
@@ -100,7 +101,9 @@ function RetroBoard() {
                 if (saved) try { setState(JSON.parse(saved)); } catch (e) { }
                 const savedName = localStorage.getItem(`retroboard-name-${boardId}`);
                 if (savedName) setBoardName(savedName);
-                setOnlineUsers([{ name: userName, isHost: true }]);
+                const initialUsers = [{ name: userName, isHost: true }];
+                setOnlineUsers(initialUsers);
+                onlineUsersRef.current = initialUsers;
             }
         });
 
@@ -114,13 +117,20 @@ function RetroBoard() {
                     conn._userName = data.userName;
                     const next = [{ name: userName, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))];
                     setOnlineUsers(next);
+                    onlineUsersRef.current = next;
+                    const payload = { type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: next };
+                    connectionsRef.current.forEach(c => { if (c.open) c.send(payload); });
                 } else if (data.type === 'ACTION') {
                     handleAction(data.action, true);
                 }
             });
             conn.on('close', () => {
                 connectionsRef.current = connectionsRef.current.filter(c => c !== conn);
-                setOnlineUsers([{ name: userName, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))]);
+                const next = [{ name: userName, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))];
+                setOnlineUsers(next);
+                onlineUsersRef.current = next;
+                const payload = { type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: next };
+                connectionsRef.current.forEach(c => { if (c.open) c.send(payload); });
             });
         });
 
@@ -144,7 +154,7 @@ function RetroBoard() {
 
     useEffect(() => {
         if (toast.visible) {
-            const timer = setTimeout(() => setToast({ visible: false, message: '' }), 3000);
+            const timer = setTimeout(() => setToast({ visible: false, message: '' }), 5000);
             return () => clearTimeout(timer);
         }
     }, [toast.visible]);
@@ -171,16 +181,6 @@ function RetroBoard() {
         setModal({ visible: true, title, placeholder, defaultValue, onConfirm });
     }, []);
 
-    useEffect(() => {
-        if (!userName) {
-            openModal('Welcome!', 'Enter your name to join', '', (val) => {
-                if (val) {
-                    setUserName(val);
-                    localStorage.setItem('retroboard-username', val);
-                }
-            });
-        }
-    }, [userName, openModal]);
 
     useEffect(() => {
         if (!userName) return;
@@ -190,14 +190,16 @@ function RetroBoard() {
             if (el) {
                 const s = new Sortable(el, {
                     group: 'cards',
-                    animation: 200,
+                    animation: 350,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
                     filter: '.vote-btn, .delete-btn, .card-text',
                     preventOnFilter: false,
                     onStart: () => document.body.classList.add('is-dragging'),
                     onEnd: (evt) => {
-                        document.body.classList.remove('is-dragging');
+                        // Delay removing is-dragging so React re-renders before
+                        // the fadeIn animation is re-enabled on cards
+                        setTimeout(() => document.body.classList.remove('is-dragging'), 50);
                         const sourceColumnId = evt.from.dataset.colid;
                         const destColumnId = evt.to.dataset.colid;
                         const sourceIndex = evt.oldIndex;
@@ -289,7 +291,17 @@ function RetroBoard() {
                     }
                 }, 'New Board'),
                 e('button', { className: 'action-btn', onClick: () => { navigator.clipboard.writeText(window.location.href); setToast({ visible: true, message: 'Link copied to clipboard!' }); } }, 'Share Board'),
-                e('div', { className: 'user-badge' },
+                e('div', {
+                    className: 'user-badge', style: { cursor: 'pointer' },
+                    onClick: () => {
+                        openModal('Rename User', 'Enter new name...', userName, (n) => {
+                            if (n) {
+                                setUserName(n);
+                                localStorage.setItem('retroboard-username', n);
+                            }
+                        });
+                    }
+                },
                     e('span', { className: 'user-avatar' }, userName[0]?.toUpperCase()),
                     e('span', { className: 'user-name-display' }, userName)
                 )
@@ -341,7 +353,7 @@ function RetroBoard() {
                                             e('span', { className: 'card-author-name' }, card.author || 'Anonymous')
                                         ),
                                         e('div', { className: 'card-actions-group' },
-                                            e('button', { className: 'vote-btn', onClick: () => handleAction({ type: 'VOTE', columnId: colId, cardId: card.id }) },
+                                            e('button', { className: 'vote-btn', onMouseDown: ev => ev.stopPropagation(), onClick: () => handleAction({ type: 'VOTE', columnId: colId, cardId: card.id }) },
                                                 e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
                                                     e('path', { d: 'M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3' })
                                                 ),
