@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import ReactDOM from 'react-dom/client';
+import { flushSync } from 'react-dom';
 import Sortable from 'sortablejs';
 
 export const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -61,6 +62,7 @@ export function RetroBoard() {
     const peerRef = useRef(null);
     const hostConnRef = useRef(null);
     const columnsRef = useRef({});
+    const newCardIds = useRef(new Set());
 
     useEffect(() => { stateRef.current = state; }, [state]);
     useEffect(() => { boardNameRef.current = boardName; }, [boardName]);
@@ -97,6 +99,7 @@ export function RetroBoard() {
     }, [userName, broadcastState, peerReady]);
 
     const handleAction = useCallback((action, fromRemote = false) => {
+        if (action.type === 'CREATE') newCardIds.current.add(action.cardId);
         setState(prev => applyAction(prev, action));
 
         if (isHost) {
@@ -209,16 +212,14 @@ export function RetroBoard() {
             if (el) {
                 const s = new Sortable(el, {
                     group: 'cards',
-                    animation: 350,
+                    animation: 250,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
                     filter: '.vote-btn, .delete-btn, .card-text',
                     preventOnFilter: false,
                     onStart: () => document.body.classList.add('is-dragging'),
                     onEnd: (evt) => {
-                        // Delay removing is-dragging so React re-renders before
-                        // the fadeIn animation is re-enabled on cards
-                        setTimeout(() => document.body.classList.remove('is-dragging'), 50);
+                        document.body.classList.remove('is-dragging');
                         const sourceColumnId = evt.from.dataset.colid;
                         const destColumnId = evt.to.dataset.colid;
                         const sourceIndex = evt.oldIndex;
@@ -227,21 +228,22 @@ export function RetroBoard() {
 
                         if (sourceColumnId === destColumnId && sourceIndex === destIndex) return;
 
-                        // Sortable moved the item in DOM, let's let React handle it.
-                        // We need to undo Sortable's DOM move because React will re-render soon.
+                        // Undo SortableJS's DOM move and synchronously re-render React
+                        // in the same JS frame so the browser never paints intermediate state.
                         if (evt.from.children[evt.oldIndex]) {
                             evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
                         } else {
                             evt.from.appendChild(evt.item);
                         }
-
-                        handleAction({
-                            type: 'MOVE',
-                            cardId,
-                            sourceColumnId,
-                            destColumnId,
-                            sourceIndex,
-                            destIndex
+                        flushSync(() => {
+                            handleAction({
+                                type: 'MOVE',
+                                cardId,
+                                sourceColumnId,
+                                destColumnId,
+                                sourceIndex,
+                                destIndex
+                            });
                         });
                     }
                 });
@@ -365,7 +367,8 @@ export function RetroBoard() {
                                 e('div', {
                                     key: card.id,
                                     'data-id': card.id,
-                                    className: 'card',
+                                    className: `card${newCardIds.current.has(card.id) ? ' card-entering' : ''}`,
+                                    onAnimationEnd: () => newCardIds.current.delete(card.id),
                                     onDoubleClick: (ev) => {
                                         const textEl = ev.currentTarget.querySelector('.card-text');
                                         if (textEl) { textEl.focus(); }
