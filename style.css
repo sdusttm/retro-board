@@ -406,7 +406,9 @@ header {
 
 body.is-dragging .card {
     animation: none !important;
-    transition: none !important;
+    /* transition intentionally NOT suppressed here — SortableJS uses CSS
+       transitions for its animation:250 slide effect. Suppressing it caused
+       cards to snap/jitter instead of sliding smoothly to make room. */
 }
 
 @keyframes fadeIn {
