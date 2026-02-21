@@ -41,7 +41,7 @@ body {
 }
 
 header {
-    padding: 1rem 4rem;
+    padding: 0.6rem 4rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -144,7 +144,7 @@ header {
 }
 
 .logo {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: 1px;
     background: linear-gradient(135deg, #fff 0%, #aaa 100%);
@@ -192,8 +192,8 @@ header {
 .board-container {
     flex: 1;
     display: flex;
-    gap: 2rem;
-    padding: 2rem 3rem 2rem 180px;
+    gap: 1.25rem;
+    padding: 1.25rem 2.5rem 1.25rem 170px;
     overflow-x: auto;
     align-items: flex-start;
     justify-content: center;
@@ -303,8 +303,8 @@ header {
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
-    padding: 1.5rem;
-    height: calc(100vh - 140px);
+    padding: 1rem;
+    height: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
     box-shadow: var(--glass-shadow);
@@ -314,11 +314,11 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .column-title {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -330,11 +330,11 @@ header {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     color: #fff;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -371,9 +371,9 @@ header {
 .card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 1.25rem;
-    margin-bottom: 1rem;
+    border-radius: 12px;
+    padding: 0.85rem;
+    margin-bottom: 0.65rem;
     transition: background 0.3s ease, border-color 0.2s ease, box-shadow 0.3s ease;
     position: relative;
     cursor: grab;
@@ -399,7 +399,7 @@ body.is-dragging .card {
     height: 6px !important;
     min-height: 0 !important;
     padding: 0 !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 0.65rem !important;
     border: none !important;
     border-radius: 6px !important;
     background: var(--accent-color) !important;
@@ -451,7 +451,7 @@ body.is-dragging .card {
 
 .board-columns {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
     height: 100%;
 }
 
@@ -461,11 +461,11 @@ body.is-dragging .card {
 }
 
 .card-text {
-    font-size: 1rem;
-    line-height: 1.5;
+    font-size: 0.85rem;
+    line-height: 1.45;
     color: var(--text-primary);
-    margin-bottom: 1rem;
-    min-height: 1.5rem;
+    margin-bottom: 0.6rem;
+    min-height: 1.3rem;
     outline: none;
     cursor: text;
     user-select: text;
@@ -494,8 +494,8 @@ body.is-dragging .card {
 }
 
 .card-author-avatar {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), #7b2ff7);
     display: flex;
@@ -508,7 +508,7 @@ body.is-dragging .card {
 }
 
 .card-author-name {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-secondary);
     opacity: 0.7;
 }
@@ -523,7 +523,7 @@ body.is-dragging .card {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
@@ -549,13 +549,13 @@ body.is-dragging .card {
 
 .delete-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 8px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.4);
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     border-radius: 8px;
     cursor: pointer;
     display: flex;
