@@ -6,6 +6,79 @@ import Sortable from 'sortablejs';
 export const generateId = () => Math.random().toString(36).substring(2, 9);
 const e = React.createElement;
 
+const THEMES = {
+    default: {
+        name: 'Neon Pink', accent: '#ff007c', accentSecondary: '#7b2ff7',
+        meshGradient: 'radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0,transparent 50%),radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0,transparent 50%),radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0,transparent 50%),radial-gradient(at 0% 50%, hsla(225,39%,30%,1) 0,transparent 50%),radial-gradient(at 50% 50%, hsla(253,16%,7%,1) 0,transparent 50%),radial-gradient(at 100% 50%, hsla(339,49%,30%,1) 0,transparent 50%),radial-gradient(at 0% 100%, hsla(339,49%,30%,1) 0,transparent 50%),radial-gradient(at 50% 100%, hsla(225,39%,30%,1) 0,transparent 50%),radial-gradient(at 100% 100%, hsla(253,16%,7%,1) 0,transparent 50%)',
+        glassBg: 'rgba(255,255,255,0.05)', glassBorder: 'rgba(255,255,255,0.1)',
+        textPrimary: '#ffffff', textSecondary: 'rgba(255,255,255,0.7)', bgColor: '#0a0a0c'
+    },
+    ocean: {
+        name: 'Ocean Blue', accent: '#00b4d8', accentSecondary: '#0077b6',
+        meshGradient: 'radial-gradient(at 0% 0%, hsla(210,30%,7%,1) 0,transparent 50%),radial-gradient(at 50% 0%, hsla(200,50%,22%,1) 0,transparent 50%),radial-gradient(at 100% 0%, hsla(190,60%,25%,1) 0,transparent 50%),radial-gradient(at 0% 50%, hsla(200,50%,20%,1) 0,transparent 50%),radial-gradient(at 50% 50%, hsla(210,30%,7%,1) 0,transparent 50%),radial-gradient(at 100% 50%, hsla(190,60%,22%,1) 0,transparent 50%),radial-gradient(at 0% 100%, hsla(190,60%,22%,1) 0,transparent 50%),radial-gradient(at 50% 100%, hsla(200,50%,20%,1) 0,transparent 50%),radial-gradient(at 100% 100%, hsla(210,30%,7%,1) 0,transparent 50%)',
+        glassBg: 'rgba(255,255,255,0.05)', glassBorder: 'rgba(255,255,255,0.1)',
+        textPrimary: '#ffffff', textSecondary: 'rgba(255,255,255,0.7)', bgColor: '#0a0c10'
+    },
+    emerald: {
+        name: 'Emerald', accent: '#00c896', accentSecondary: '#059669',
+        meshGradient: 'radial-gradient(at 0% 0%, hsla(160,20%,7%,1) 0,transparent 50%),radial-gradient(at 50% 0%, hsla(165,40%,20%,1) 0,transparent 50%),radial-gradient(at 100% 0%, hsla(170,50%,22%,1) 0,transparent 50%),radial-gradient(at 0% 50%, hsla(165,40%,18%,1) 0,transparent 50%),radial-gradient(at 50% 50%, hsla(160,20%,7%,1) 0,transparent 50%),radial-gradient(at 100% 50%, hsla(170,50%,20%,1) 0,transparent 50%),radial-gradient(at 0% 100%, hsla(170,50%,20%,1) 0,transparent 50%),radial-gradient(at 50% 100%, hsla(165,40%,18%,1) 0,transparent 50%),radial-gradient(at 100% 100%, hsla(160,20%,7%,1) 0,transparent 50%)',
+        glassBg: 'rgba(255,255,255,0.05)', glassBorder: 'rgba(255,255,255,0.1)',
+        textPrimary: '#ffffff', textSecondary: 'rgba(255,255,255,0.7)', bgColor: '#0a0c0a'
+    },
+    sunset: {
+        name: 'Sunset', accent: '#ff6b35', accentSecondary: '#c2185b',
+        meshGradient: 'radial-gradient(at 0% 0%, hsla(0,20%,7%,1) 0,transparent 50%),radial-gradient(at 50% 0%, hsla(15,50%,22%,1) 0,transparent 50%),radial-gradient(at 100% 0%, hsla(340,45%,25%,1) 0,transparent 50%),radial-gradient(at 0% 50%, hsla(15,50%,20%,1) 0,transparent 50%),radial-gradient(at 50% 50%, hsla(0,20%,7%,1) 0,transparent 50%),radial-gradient(at 100% 50%, hsla(340,45%,22%,1) 0,transparent 50%),radial-gradient(at 0% 100%, hsla(340,45%,22%,1) 0,transparent 50%),radial-gradient(at 50% 100%, hsla(15,50%,20%,1) 0,transparent 50%),radial-gradient(at 100% 100%, hsla(0,20%,7%,1) 0,transparent 50%)',
+        glassBg: 'rgba(255,255,255,0.05)', glassBorder: 'rgba(255,255,255,0.1)',
+        textPrimary: '#ffffff', textSecondary: 'rgba(255,255,255,0.7)', bgColor: '#0c0a0a'
+    },
+    lavender: {
+        name: 'Lavender', accent: '#a855f7', accentSecondary: '#6366f1',
+        meshGradient: 'radial-gradient(at 0% 0%, hsla(270,20%,7%,1) 0,transparent 50%),radial-gradient(at 50% 0%, hsla(260,45%,25%,1) 0,transparent 50%),radial-gradient(at 100% 0%, hsla(280,50%,28%,1) 0,transparent 50%),radial-gradient(at 0% 50%, hsla(260,45%,22%,1) 0,transparent 50%),radial-gradient(at 50% 50%, hsla(270,20%,7%,1) 0,transparent 50%),radial-gradient(at 100% 50%, hsla(280,50%,25%,1) 0,transparent 50%),radial-gradient(at 0% 100%, hsla(280,50%,25%,1) 0,transparent 50%),radial-gradient(at 50% 100%, hsla(260,45%,22%,1) 0,transparent 50%),radial-gradient(at 100% 100%, hsla(270,20%,7%,1) 0,transparent 50%)',
+        glassBg: 'rgba(255,255,255,0.05)', glassBorder: 'rgba(255,255,255,0.1)',
+        textPrimary: '#ffffff', textSecondary: 'rgba(255,255,255,0.7)', bgColor: '#0c0a10'
+    },
+    gold: {
+        name: 'Gold', accent: '#f59e0b', accentSecondary: '#b45309',
+        meshGradient: 'radial-gradient(at 0% 0%, hsla(30,20%,7%,1) 0,transparent 50%),radial-gradient(at 50% 0%, hsla(35,45%,20%,1) 0,transparent 50%),radial-gradient(at 100% 0%, hsla(25,50%,22%,1) 0,transparent 50%),radial-gradient(at 0% 50%, hsla(35,45%,18%,1) 0,transparent 50%),radial-gradient(at 50% 50%, hsla(30,20%,7%,1) 0,transparent 50%),radial-gradient(at 100% 50%, hsla(25,50%,20%,1) 0,transparent 50%),radial-gradient(at 0% 100%, hsla(25,50%,20%,1) 0,transparent 50%),radial-gradient(at 50% 100%, hsla(35,45%,18%,1) 0,transparent 50%),radial-gradient(at 100% 100%, hsla(30,20%,7%,1) 0,transparent 50%)',
+        glassBg: 'rgba(255,255,255,0.05)', glassBorder: 'rgba(255,255,255,0.1)',
+        textPrimary: '#ffffff', textSecondary: 'rgba(255,255,255,0.7)', bgColor: '#0c0b0a'
+    }
+};
+
+function applyTheme(key) {
+    const theme = THEMES[key];
+    if (!theme) return;
+    const s = document.documentElement.style;
+    s.setProperty('--accent-color', theme.accent);
+    s.setProperty('--accent-secondary', theme.accentSecondary);
+    s.setProperty('--mesh-gradient', theme.meshGradient);
+    s.setProperty('--glass-bg', theme.glassBg);
+    s.setProperty('--glass-border', theme.glassBorder);
+    s.setProperty('--text-primary', theme.textPrimary);
+    s.setProperty('--text-secondary', theme.textSecondary);
+    document.body.style.backgroundColor = theme.bgColor;
+    localStorage.setItem('retroboard-theme', key);
+}
+
+// Apply saved theme immediately to avoid flash
+applyTheme(localStorage.getItem('retroboard-theme') || 'default');
+
+function nameColor(name) {
+    if (!name) return 'hsl(0,70%,50%)';
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+    return `hsl(${h},70%,50%)`;
+}
+
+function avatarGradient(name) {
+    if (!name) return undefined;
+    const h1 = nameColor(name);
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+    const h2 = `hsl(${(h + 40) % 360},60%,45%)`;
+    return { background: `linear-gradient(135deg, ${h1}, ${h2})` };
+}
+
 export function applyAction(state, action) {
     const next = { ...state };
     const { type, columnId, cardId } = action;
@@ -53,6 +126,9 @@ export function RetroBoard() {
     const [boards, setBoards] = useState([]);
     const [modal, setModal] = useState({ visible: false, title: '', placeholder: '', defaultValue: '', onConfirm: null });
     const [status, setStatus] = useState('');
+    const [currentTheme, setCurrentTheme] = useState(() => localStorage.getItem('retroboard-theme') || 'default');
+    const [themeOpen, setThemeOpen] = useState(false);
+    const themeRef = useRef(null);
 
     const stateRef = useRef(state);
     const boardNameRef = useRef(boardName);
@@ -63,6 +139,7 @@ export function RetroBoard() {
     const hostConnRef = useRef(null);
     const columnsRef = useRef({});
     const newCardIds = useRef(new Set());
+    const stateTsRef = useRef(0);
 
     useEffect(() => { stateRef.current = state; }, [state]);
     useEffect(() => { boardNameRef.current = boardName; }, [boardName]);
@@ -76,13 +153,15 @@ export function RetroBoard() {
             type: 'SYNC_STATE',
             state: stateRef.current,
             boardName: boardNameRef.current,
-            onlineUsers: onlineUsersRef.current
+            onlineUsers: onlineUsersRef.current,
+            stateTs: stateTsRef.current
         };
         connectionsRef.current.forEach(conn => {
             if (conn.open) conn.send(payload);
         });
         localStorage.setItem(`retroboard-state-${boardId}`, JSON.stringify(stateRef.current));
         localStorage.setItem(`retroboard-name-${boardId}`, boardNameRef.current);
+        localStorage.setItem(`retroboard-ts-${boardId}`, String(stateTsRef.current));
     }, [isHost, boardId]);
 
     useEffect(() => {
@@ -100,6 +179,7 @@ export function RetroBoard() {
 
     const handleAction = useCallback((action, fromRemote = false) => {
         if (action.type === 'CREATE') newCardIds.current.add(action.cardId);
+        stateTsRef.current = Date.now();
         setState(prev => applyAction(prev, action));
 
         if (isHost) {
@@ -123,6 +203,7 @@ export function RetroBoard() {
                 if (saved) try { setState(JSON.parse(saved)); } catch (e) { }
                 const savedName = localStorage.getItem(`retroboard-name-${boardId}`);
                 if (savedName) setBoardName(savedName);
+                stateTsRef.current = parseInt(localStorage.getItem(`retroboard-ts-${boardId}`) || '0', 10);
                 const initialUsers = [{ name: userNameRef.current, isHost: true }];
                 setOnlineUsers(initialUsers);
                 onlineUsersRef.current = initialUsers;
@@ -132,15 +213,22 @@ export function RetroBoard() {
         p.on('connection', (conn) => {
             connectionsRef.current.push(conn);
             conn.on('open', () => {
-                conn.send({ type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: onlineUsersRef.current });
+                conn.send({ type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: onlineUsersRef.current, stateTs: stateTsRef.current });
             });
             conn.on('data', (data) => {
                 if (data.type === 'ANNOUNCE') {
                     conn._userName = data.userName;
+                    // If guest has newer state, adopt it
+                    if (data.savedTs && data.savedTs > stateTsRef.current && data.savedState) {
+                        setState(data.savedState);
+                        stateRef.current = data.savedState;
+                        stateTsRef.current = data.savedTs;
+                        if (data.savedBoardName) { setBoardName(data.savedBoardName); boardNameRef.current = data.savedBoardName; }
+                    }
                     const next = [{ name: userNameRef.current, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))];
                     setOnlineUsers(next);
                     onlineUsersRef.current = next;
-                    const payload = { type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: next };
+                    const payload = { type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: next, stateTs: stateTsRef.current };
                     connectionsRef.current.forEach(c => { if (c.open) c.send(payload); });
                 } else if (data.type === 'ACTION') {
                     handleAction(data.action, true);
@@ -151,7 +239,7 @@ export function RetroBoard() {
                 const next = [{ name: userNameRef.current, isHost: true }, ...connectionsRef.current.map(c => ({ name: c._userName || 'Guest', isHost: false }))];
                 setOnlineUsers(next);
                 onlineUsersRef.current = next;
-                const payload = { type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: next };
+                const payload = { type: 'SYNC_STATE', state: stateRef.current, boardName: boardNameRef.current, onlineUsers: next, stateTs: stateTsRef.current };
                 connectionsRef.current.forEach(c => { if (c.open) c.send(payload); });
             });
         });
@@ -163,9 +251,26 @@ export function RetroBoard() {
                 gp.on('open', () => {
                     setIsHost(false); setStatus('Guest (Connecting...)');
                     const c = gp.connect(`retroboard-${boardId}`, { reliable: true }); hostConnRef.current = c;
-                    c.on('open', () => { setStatus('Guest (Connected)'); c.send({ type: 'ANNOUNCE', userName: userNameRef.current }); });
+                    c.on('open', () => {
+                        setStatus('Guest (Connected)');
+                        // Send saved state + timestamp so host can adopt if newer
+                        const announce = { type: 'ANNOUNCE', userName: userNameRef.current };
+                        const savedTs = parseInt(localStorage.getItem(`retroboard-ts-${boardId}`) || '0', 10);
+                        if (savedTs) {
+                            announce.savedTs = savedTs;
+                            try { announce.savedState = JSON.parse(localStorage.getItem(`retroboard-state-${boardId}`)); } catch (e) { }
+                            announce.savedBoardName = localStorage.getItem(`retroboard-name-${boardId}`) || undefined;
+                        }
+                        c.send(announce);
+                    });
                     c.on('data', (d) => {
-                        if (d.type === 'SYNC_STATE') { setState(d.state); setBoardName(d.boardName); setOnlineUsers(d.onlineUsers); }
+                        if (d.type === 'SYNC_STATE') {
+                            setState(d.state); setBoardName(d.boardName); setOnlineUsers(d.onlineUsers);
+                            stateTsRef.current = d.stateTs || Date.now();
+                            localStorage.setItem(`retroboard-state-${boardId}`, JSON.stringify(d.state));
+                            localStorage.setItem(`retroboard-name-${boardId}`, d.boardName);
+                            localStorage.setItem(`retroboard-ts-${boardId}`, String(d.stateTs || Date.now()));
+                        }
                     });
                 });
             }
@@ -180,6 +285,15 @@ export function RetroBoard() {
             return () => clearTimeout(timer);
         }
     }, [toast.visible]);
+
+    useEffect(() => {
+        if (!themeOpen) return;
+        const handleClick = (ev) => {
+            if (themeRef.current && !themeRef.current.contains(ev.target)) setThemeOpen(false);
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [themeOpen]);
 
     const refreshBoards = useCallback(() => {
         const found = [];
@@ -280,6 +394,7 @@ export function RetroBoard() {
                             openModal('Rename Board', 'Enter new name...', boardName, (n) => {
                                 if (n) {
                                     setBoardName(n);
+                                    stateTsRef.current = Date.now();
                                     setTimeout(broadcastState, 0);
                                 }
                             });
@@ -312,6 +427,34 @@ export function RetroBoard() {
                     }
                 }, 'New Board'),
                 e('button', { className: 'action-btn', onClick: () => { navigator.clipboard.writeText(window.location.href); setToast({ visible: true, message: 'Link copied to clipboard!' }); } }, 'Share Board'),
+                e('div', { className: 'theme-picker-wrapper', ref: themeRef },
+                    e('button', {
+                        className: 'theme-picker-btn', title: 'Change theme',
+                        onClick: () => setThemeOpen(o => !o)
+                    },
+                        e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+                            e('circle', { cx: 13.5, cy: 6.5, r: '.5', fill: 'currentColor' }),
+                            e('circle', { cx: 17.5, cy: 10.5, r: '.5', fill: 'currentColor' }),
+                            e('circle', { cx: 8.5, cy: 7.5, r: '.5', fill: 'currentColor' }),
+                            e('circle', { cx: 6.5, cy: 12, r: '.5', fill: 'currentColor' }),
+                            e('path', { d: 'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z' })
+                        )
+                    ),
+                    themeOpen && e('div', { className: 'theme-dropdown' },
+                        Object.entries(THEMES).map(([key, theme]) =>
+                            e('button', {
+                                key, className: `theme-option ${currentTheme === key ? 'active' : ''}`,
+                                onClick: () => { applyTheme(key); setCurrentTheme(key); setThemeOpen(false); }
+                            },
+                                e('span', { className: 'theme-swatch', style: { backgroundColor: theme.accent } }),
+                                e('span', { className: 'theme-label' }, theme.name),
+                                e('svg', { className: 'theme-check', width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 3 },
+                                    e('path', { d: 'M20 6L9 17l-5-5' })
+                                )
+                            )
+                        )
+                    )
+                ),
                 e('div', {
                     className: 'user-badge', style: { cursor: 'pointer' },
                     onClick: () => {
@@ -323,7 +466,7 @@ export function RetroBoard() {
                         });
                     }
                 },
-                    e('span', { className: 'user-avatar' }, userName[0]?.toUpperCase()),
+                    e('span', { className: 'user-avatar', style: avatarGradient(userName) }, userName[0]?.toUpperCase()),
                     e('span', { className: 'user-name-display' }, userName)
                 )
             )
@@ -334,7 +477,7 @@ export function RetroBoard() {
             ),
             e('div', { className: 'users-list' },
                 onlineUsers.map((u, i) => e('div', { className: 'user-presence-item', key: i },
-                    e('span', { className: `user-presence-avatar ${u.isHost ? 'host-avatar' : ''}` }, u.name ? u.name[0].toUpperCase() : '?'),
+                    e('span', { className: 'user-presence-avatar', style: avatarGradient(u.name) }, u.name ? u.name[0].toUpperCase() : '?'),
                     e('span', { className: 'user-presence-name' }, `${u.name} ${u.isHost ? '(host)' : ''}`)
                 ))
             )
@@ -387,7 +530,7 @@ export function RetroBoard() {
                                     }, card.text),
                                     e('div', { className: 'card-footer' },
                                         e('div', { className: 'card-author' },
-                                            e('span', { className: 'card-author-avatar' }, card.author ? card.author[0].toUpperCase() : '?'),
+                                            e('span', { className: 'card-author-avatar', style: avatarGradient(card.author) }, card.author ? card.author[0].toUpperCase() : '?'),
                                             e('span', { className: 'card-author-name' }, card.author || 'Anonymous')
                                         ),
                                         e('div', { className: 'card-actions-group' },
