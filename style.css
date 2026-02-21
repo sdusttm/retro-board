@@ -465,6 +465,11 @@ body.is-dragging .card {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    pointer-events: none;
+}
+
+.vote-btn {
+    pointer-events: auto;
 }
 
 .card-author {
